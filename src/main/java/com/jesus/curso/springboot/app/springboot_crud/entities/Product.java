@@ -1,12 +1,14 @@
 package com.jesus.curso.springboot.app.springboot_crud.entities;
 
+import com.jesus.curso.springboot.app.springboot_crud.validation.IsRequired;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+//import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,7 +29,7 @@ public class Product {
     @NotNull(message = "{NotNull.product.price}")
     private Integer price;
 
-    @NotBlank(message = "{NotBlank.product.description}")
+    @IsRequired
     private String description;
 
     
