@@ -8,7 +8,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +26,7 @@ import com.jesus.curso.springboot.app.springboot_crud.services.ProductService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(originPatterns = "*" , origins = "http://localhost:4200") // Permite solicitudes desde cualquier origen, puedes restringirlo a dominios específicos si lo deseas
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -35,11 +38,13 @@ public class ProductController {
     //private ProductValidation validation;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Solo los usuarios con el rol ADMIN o USER pueden acceder a este endpoint
     public List<Product> list() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Solo los usuarios con el rol ADMIN o USER pueden acceder a este endpoint
     public ResponseEntity<?> view(@PathVariable Long id) {
 
         Optional<Product> productOptional = service.findById(id);
@@ -50,6 +55,7 @@ public class ProductController {
     }
 
     @PostMapping //CREATE
+    @PreAuthorize("hasRole('ADMIN')") // Solo los usuarios con el rol ADMIN pueden acceder a este endpoint
     public ResponseEntity<?> create(@Valid @RequestBody Product product, BindingResult result) {
         //validation.validate(product, result);
         if (result.hasFieldErrors()) {
@@ -61,6 +67,7 @@ public class ProductController {
 
 
     @PutMapping("/{id}") //UPDATE
+    @PreAuthorize("hasRole('ADMIN')") // Solo los usuarios con el rol ADMIN pueden acceder a este endpoint
     public ResponseEntity<?> update( @Valid @RequestBody Product product, BindingResult result ,@PathVariable Long id) {
         //validation.validate(product, result);
         if (result.hasFieldErrors()) {
@@ -78,6 +85,7 @@ public class ProductController {
 
 
     @DeleteMapping("/{id}") //DELETE
+    @PreAuthorize("hasRole('ADMIN')") // Solo los usuarios con el rol ADMIN pueden acceder a este endpoint
     public ResponseEntity<?> delete(@PathVariable Long id) {
         Optional<Product> productOptional = service.delete(id);
         if(productOptional.isPresent()) {

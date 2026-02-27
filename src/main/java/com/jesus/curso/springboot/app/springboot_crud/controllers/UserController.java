@@ -7,7 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,7 @@ import com.jesus.curso.springboot.app.springboot_crud.services.UserService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(originPatterns = "*" , origins = "http://localhost:4200") // Permite solicitudes desde cualquier origen, puedes restringirlo a dominios específicos si lo deseas
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -26,6 +29,7 @@ public class UserController {
     @Autowired
     private UserService service;
 
+    @PreAuthorize("hasRole('ADMIN')") // Solo los usuarios con el rol ADMIN pueden acceder a este endpoint
     @GetMapping
     public List<User> list() {
         return service.findAll();

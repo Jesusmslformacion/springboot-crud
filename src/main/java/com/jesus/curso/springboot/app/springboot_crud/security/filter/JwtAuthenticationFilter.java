@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,7 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.jesus.curso.springboot.app.springboot_crud.entities.User;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -71,22 +69,19 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 String username = user.getUsername();
                 Collection<? extends GrantedAuthority> roles = authResult.getAuthorities();
 
-                Claims claims = Jwts.claims()
-                .add("authorities", roles.stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .toList())
-                .add("username", username)
-                .build();
+                List<String> authorities = roles.stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .toList();
                 
 
 
                 String token = Jwts.builder()
-                        .subject(username)
-                        .claims(claims)
-                        .expiration(new Date(System.currentTimeMillis() + 3600000))
-                        .issuedAt(new Date())
-                        .signWith(SECRET_KEY)
-                        .compact();
+                    .subject(username)
+                    .claim("authorities", authorities)  
+                    .expiration(new Date(System.currentTimeMillis() + 3600000))
+                    .issuedAt(new Date())
+                    .signWith(SECRET_KEY)
+                    .compact();
 
                 response.addHeader(HEADER_AUTHORIZATION, PREFIX_TOKEN + token);
 
